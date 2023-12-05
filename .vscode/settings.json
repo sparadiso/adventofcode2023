@@ -1,0 +1,6 @@
+{
+    "mojo.modularHomePath": "/Users/sparadiso/.modular",
+    "files.watcherExclude": {
+        "**/target": true
+    },
+}
