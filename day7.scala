@@ -92,16 +92,16 @@ def handTypePt2(hand: Hand): HandType = {
 /** Main functional driver
   */
 def gameSetRanker(
-    cardStrength: (String) => Int,
-    handType: Hand => HandType
+    cardStrengths: (String) => Int,
+    fortuneTeller: Hand => HandType // Hand reader
 )(hands: Seq[Hand]): Seq[Hand] = {
   hands
-    .groupBy(handType)
+    .groupBy(fortuneTeller)
     .toSeq
     .sortBy(_._1)
     .flatMap {
       case (handType, hands) => {
-        hands.sortBy(x => (x.cards.map(c => cardStrength(c.str))))
+        hands.sortBy(x => (x.cards.map(c => cardStrengths(c.str))))
       }
     }
 }
