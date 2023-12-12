@@ -91,7 +91,7 @@ def handTypePt2(hand: Hand): HandType = {
 
 /** Main functional driver
   */
-def rank(
+def gameSetRanker(
     cardStrength: (String) => Int,
     handType: Hand => HandType
 )(hands: Seq[Hand]): Seq[Hand] = {
@@ -107,7 +107,7 @@ def rank(
 }
 
 object main extends App {
-  def cards(fname: String) = {
+  def loadHands(fname: String): Seq[Hand] = {
     Source
       .fromFile(fname)
       .getLines()
@@ -116,44 +116,26 @@ object main extends App {
       .map(x => Hand(x(0).split("").map(Card.apply), x(1).toInt))
   }
 
-  def part1() = {
-    // Part 1
-    rank(
-      (Map(
-        "A" -> 14,
-        "K" -> 13,
-        "Q" -> 12,
-        "J" -> 11,
-        "T" -> 10
-      ) ++ (2 until 10)
-        .map(v => (v.toString, v))
-        .toMap),
-      handTypePt1
-    )
-  }
+  val part1CardStrengths = (Map(
+    "A" -> 14,
+    "K" -> 13,
+    "Q" -> 12,
+    "J" -> 11,
+    "T" -> 10
+  ) ++ (2 until 10)
+    .map(v => (v.toString, v))
+    .toMap)
 
-  def part2() = {
-    rank(
-      (Map(
-        "A" -> 14,
-        "K" -> 13,
-        "Q" -> 12,
-        "J" -> 1,
-        "T" -> 11
-      ) ++ (2 until 10)
-        .map(v => (v.toString, v))
-        .toMap),
-      handTypePt2
-    )
-  }
+  // Part 2 just pushes "J" to the bottom "T" being 10 is fine since the Int cards are 2->9
+  val part2CardStrengths = part1CardStrengths.updated("J", 1)
 
   // Driver
   // Part-specific params
-  val ranker = part2()
+  val ranker = gameSetRanker(part1CardStrengths, handTypePt1)
   val fname = "day7.input"
 
   val scores = for {
-    (hand, rank) <- ranker(cards(fname)).zipWithIndex
+    (hand, rank) <- ranker(loadHands(fname)).zipWithIndex
     score <- Some((rank + 1) * hand.bid)
   } yield (score)
 
