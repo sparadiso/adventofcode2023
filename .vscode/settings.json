@@ -3,4 +3,5 @@
     "files.watcherExclude": {
         "**/target": true
     },
+    "editor.formatOnSave": true
 }
