@@ -66,12 +66,17 @@ object day8 extends App {
   def part2(instructions: Seq[String], nodes: Map[String, Node]) = {
     // Find all start nodes
     val startNodes = nodes.keys.filter(v => v.last.toString() == "A").toSeq
+    val solveOnce = label => run(label, instructions, _.last == 'Z', nodes)
+
+    // Find each path length to *Z in parallel
     var cycleLengths = startNodes
       .map(nodes)
-      .map(nodeLabel => run(nodeLabel, instructions, _.last == 'Z', nodes))
-      .map(_.next()._1)
+      .map(solveOnce)
+      .map(_.next())
+      .map(_._1)
       .toVector
 
+    // Find least common multiple between all paths / prime factor method
     // Find prime factors
     def factorize(i: Int, factors: Vector[Int] = Vector()): Vector[Int] = {
       if (i == 1) {
@@ -82,22 +87,22 @@ object day8 extends App {
       }
     }
 
-    val factorized = cycleLengths.map(i => factorize(i))
+    val factorized = cycleLengths.map(i => factorize(i)).map(_.map(_.toLong))
 
     println(
       factorized
-        .map(_.map(_.toLong))
-        .map(_.groupBy(identity))
-        .flatMap(_.toSeq.map(kv => (kv._1, kv._2.size)))
-        .sortBy(_._1)
-        .groupBy(_._1)
-        .map { case (base, powers) => powers.sortBy(_._2).last }
-        .toSeq
-        .sortBy(_._1)
-        .scanLeft(BigInt(1)) {
-          case (product, (base, power)) => (
-            product * BigInt(Math.pow(base, power).toLong)
-          )
+        .map(_.groupBy(identity).toSeq)
+        .flatMap( // Map prime factors to powers
+          _.map((base, factors) => (base, factors.size))
+        )
+        .groupBy(_._1) // Collect all cycle length's prime factors
+        .map {
+          case (base, powers) => // Find the largest power of each prime factor
+            powers.sortBy(_._2).last
+        }
+        .scanLeft(1L) { // product of all the largest prime factor powers = lcm
+          case (product, (base, power)) =>
+            product * Math.pow(base, power).toLong
         }
         .last
     )
