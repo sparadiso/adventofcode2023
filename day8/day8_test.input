@@ -1,0 +1,10 @@
+LR
+
+11A = (11B, GGG)
+11B = (RRR, 11Z)
+11Z = (11B, YYY)
+22A = (22B, WWW)
+22B = (22C, 22C)
+22C = (22Z, 22Z)
+22Z = (22B, 22B)
+ZZZ = (ZZZ, ZZZ)
