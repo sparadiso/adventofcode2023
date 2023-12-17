@@ -115,20 +115,6 @@ object Grid {
   }
 }
 
-def burnDots(pt: Point, grid: Grid, loopPipes: Set[Point]): Unit = {
-  if (Try(grid(pt)).isSuccess && !grid(pt).visited) {
-    grid(pt) match {
-      case x: Tile if !loopPipes.contains(x.pt) =>
-        x.visited = true
-        burnDots(Point(pt.row - 1, pt.col), grid, loopPipes)
-        burnDots(Point(pt.row + 1, pt.col), grid, loopPipes)
-        burnDots(Point(pt.row, pt.col - 1), grid, loopPipes)
-        burnDots(Point(pt.row, pt.col + 1), grid, loopPipes)
-      case _ =>
-    }
-  }
-}
-
 def pipeLoop(grid: Grid): Seq[Pipe] = {
   var pipeLoop = { Seq(startPoints(grid.start, grid): _*) }.take(1)
   grid(grid.start).visited = true
