@@ -23,14 +23,6 @@ trait Tile {
   var label: String
   var visited: Boolean = false
   val pt: Point
-
-  def gridString(): String = {
-    if (visited) {
-      label + ""
-    } else {
-      label + ""
-    }
-  }
 }
 
 case class Ember(loc: Pipe, distance: Int = 0)
@@ -43,37 +35,6 @@ case class Grid(start: Point, tiles: Vector[Vector[Tile]]) {
   def apply(p: Point): Tile = {
     tiles(p.row)(p.col)
   }
-
-  def render(labeller: Tile => String): String = {
-    f"${start}\n" + tiles
-      .map(row =>
-        row
-          .map(labeller)
-          .mkString("")
-      )
-      .mkString("\n")
-  }
-
-  def printRegion(center: Point, radius: Int = 3): Unit = {
-    for (
-      dr <- (-radius to radius);
-      dc <- (-radius to radius)
-    ) {
-      val t = tiles(center.row + dr)(center.col + dc)
-      if (dc == radius) {
-        println(t.gridString())
-      } else {
-        print(t.gridString())
-      }
-    }
-    println()
-  }
-
-  override def toString(): String = {
-    f"${start}\n" + tiles
-      .map(row => row.map(_.gridString()).mkString(""))
-      .mkString("\n")
-  }
 }
 
 object Grid {
@@ -85,14 +46,12 @@ object Grid {
         col match {
           case "." => Dot(col, Point(rowIdx, colIdx))
           case "S" =>
-            // Bleh
             start = Point(rowIdx, colIdx)
 
+            // Infer the neighbors
             var neighbors = List[Point]()
-
             var r = rowIdx
             var c = colIdx
-
             List(
               ((0, -1), Set("-", "L", "F")),
               ((0, 1), Set("-", "J", "7")),
